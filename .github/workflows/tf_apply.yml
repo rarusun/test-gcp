@@ -1,0 +1,48 @@
+name: terraform apply
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - terraform/envs/prd/**
+    types:
+      - closed
+
+defaults:
+  run:
+    working_directory: terraform/envs/prd
+
+jobs:
+  tf_apply:
+    runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v0.4.0
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+      
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.4
+
+      - name: terraform fmt
+        id: fmt
+        run: terraform fmt -check
+      
+      - name: terraform init
+        id: init
+        run: terraform init
+      
+      - name: terraform apply
+        id: apply
+        run: terraform apply -no-color
+        continue-on-error: true
