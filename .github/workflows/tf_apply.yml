@@ -46,4 +46,3 @@ jobs:
         id: apply
         run: terraform apply -no-color
         continue-on-error: true
-
