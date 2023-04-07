@@ -44,8 +44,8 @@ resource "google_project_iam_member" "github_actions_iam_work_identity_users" {
 
 resource "google_service_account_iam_member" "github_actions_iam_work_identity_users" {
   service_account_id = google_service_account.github_actions.name
-  member  = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
-  role    = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
+  role               = "roles/iam.workloadIdentityUser"
 }
 
 # [TODO] google_service_account_iam_bindingではpoolにroles/storage.adminの権限を渡せなかった
@@ -54,8 +54,8 @@ resource "google_service_account_iam_member" "github_actions_iam_work_identity_u
 resource "google_project_iam_member" "github_actions_pool_storage_admin" {
   project = var.project_id
   #service_account_id = google_service_account.github_actions.name
-  member  = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
-  role    = "roles/storage.admin"
+  member = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
+  role   = "roles/storage.admin"
 }
 
 /*
