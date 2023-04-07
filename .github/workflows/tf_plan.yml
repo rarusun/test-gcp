@@ -11,7 +11,7 @@ on:
 
 defaults:
   run:
-    working_directory: terraform/envs/prd
+    working-directory: terraform/envs/prd
 
 jobs:
   tf_plan:
