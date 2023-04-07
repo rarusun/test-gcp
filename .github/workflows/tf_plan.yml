@@ -45,5 +45,7 @@ jobs:
       
       - name: terraform plan
         id: plan
+        env: 
+          TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
         run: terraform plan -no-color
         continue-on-error: true
