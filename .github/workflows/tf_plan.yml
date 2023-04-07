@@ -11,7 +11,7 @@ on:
 
 defaults:
   run:
-    wotking_directory: terraform/envs/prd
+    working_directory: terraform/envs/prd
 
 jobs:
   tf_plan:
