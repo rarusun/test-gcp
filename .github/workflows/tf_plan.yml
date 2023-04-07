@@ -27,6 +27,7 @@ jobs:
           project_id: ${{ secrets.PROJECT_ID }}
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          access_token_lifetime: 1200s
       
       - name: checkout
         uses: actions/checkout@v3
