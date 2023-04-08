@@ -30,19 +30,54 @@ resource "google_iam_workload_identity_pool_provider" "github_actions" {
   oidc { issuer_uri = "https://token.actions.githubusercontent.com" }
 }
 
-resource "google_project_iam_member" "github_actions" {
+resource "google_project_iam_member" "github_actions_storage_admin" {
+  project = var.project_id
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+  role    = "roles/storage.admin"
+}
+
+resource "google_project_iam_member" "github_actions_iam_work_identity_users" {
   project = var.project_id
   member  = "serviceAccount:${google_service_account.github_actions.email}"
   role    = "roles/iam.workloadIdentityUser"
 }
 
-resource "google_service_account_iam_binding" "github_actions" {
+resource "google_service_account_iam_member" "github_actions_iam_work_identity_users" {
+  service_account_id = google_service_account.github_actions.name
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
+  role               = "roles/iam.workloadIdentityUser"
+}
+
+# [TODO] google_service_account_iam_bindingではpoolにroles/storage.adminの権限を渡せなかった
+# これならサービスアカウントを介さず直でpoolにroleを渡したほうがいいのではと思うのだが
+# 勘違いかもしれないので後で調べる
+resource "google_project_iam_member" "github_actions_pool_storage_admin" {
+  project = var.project_id
+  #service_account_id = google_service_account.github_actions.name
+  member = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
+  role   = "roles/storage.admin"
+}
+
+/*
+resource "google_service_account_iam_binding" "github_actions_iam_work_identity_users" {
   service_account_id = google_service_account.github_actions.name
   role               = "roles/iam.workloadIdentityUser"
   members = [
     "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
   ]
   depends_on = [
-    google_project_iam_member.github_actions
+    google_project_iam_member.github_actions_iam_work_identity_users,
   ]
 }
+
+resource "google_service_account_iam_binding" "github_actions_storage_admin" {
+  service_account_id = google_service_account.github_actions.name
+  role               = "roles/storage.admin"
+  members = [
+    "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
+  ]
+  depends_on = [
+    google_project_iam_member.github_actions_storage_admin
+  ]
+}
+*/
