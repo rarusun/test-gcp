@@ -48,4 +48,4 @@ jobs:
         id: apply
         env: 
           TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
-        run: terraform apply -no-color
+        run: terraform apply -no-color -auto-approve
